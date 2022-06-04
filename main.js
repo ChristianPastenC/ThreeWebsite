@@ -6,7 +6,8 @@ import {
   PlaneGeometry, 
   DoubleSide, 
   MeshPhongMaterial, 
-  DirectionalLight
+  DirectionalLight,
+  FlatShading
 } from 'three';
 
 const scene = new Scene();
@@ -28,9 +29,15 @@ const planeGeometry = new PlaneGeometry(5, 5, 10, 10);
 const planeMaterial = new MeshPhongMaterial({
   color: 0xFF0000,
   side: DoubleSide,
+  flatShading: FlatShading,
 });
 const planeMesh = new Mesh(planeGeometry, planeMaterial);
 scene.add(planeMesh);
+
+const {array } = planeMesh.geometry.attributes.position;
+for(let i = 0; i < array.length; i+= 3){
+  array[i + 2] += Math.random();
+}
 
 const light = new DirectionalLight(0xFFFFFF, 1);
 light.position.set(0, 0, 1);
