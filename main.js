@@ -1,4 +1,4 @@
-import { Scene, PerspectiveCamera, WebGLRenderer, BoxGeometry, MeshBasicMaterial, Mesh } from 'three';
+import { Scene, PerspectiveCamera, WebGLRenderer, BoxGeometry, MeshBasicMaterial, Mesh, PlaneGeometry, DoubleSide } from 'three';
 
 const scene = new Scene();
 const camera = new PerspectiveCamera(
@@ -9,33 +9,24 @@ const camera = new PerspectiveCamera(
 );
 const renderer = new WebGLRenderer();
 
-console.log(scene);
-console.log(camera);
-console.log(renderer);
-
 renderer.setSize(innerWidth, innerHeight);
 renderer.setPixelRatio(devicePixelRatio);
 document.body.appendChild(renderer.domElement);
 
-const boxGeometry = new BoxGeometry(1, 1, 1);
-const material = new MeshBasicMaterial({
-  color: 0x00FF00
-});
-console.log(boxGeometry);
-console.log(material);
-
-const mesh = new Mesh(boxGeometry, material);
-console.log(mesh);
-
-scene.add(mesh);
-
 camera.position.z = 5;
+
+const planeGeometry = new PlaneGeometry(5, 5, 10, 10); 
+const planeMaterial = new MeshBasicMaterial({
+  color: 0xFF0000,
+  side: DoubleSide,
+});
+const planeMesh = new Mesh(planeGeometry, planeMaterial);
+scene.add(planeMesh);
 
 const animate = () => {
   requestAnimationFrame(animate);
   renderer.render(scene, camera);
-  mesh.rotation.x += 0.01;
-  mesh.rotation.y += 0.01;
+  planeMesh.rotation.x += 0.01;
 }
 
 animate();
