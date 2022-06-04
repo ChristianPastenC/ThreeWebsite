@@ -25,7 +25,7 @@ document.body.appendChild(renderer.domElement);
 
 camera.position.z = 5;
 
-const planeGeometry = new PlaneGeometry(5, 5, 10, 10);
+const planeGeometry = new PlaneGeometry(10, 10, 10, 10);
 const planeMaterial = new MeshPhongMaterial({
   color: 0xFF0000,
   side: DoubleSide,
