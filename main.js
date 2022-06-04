@@ -9,6 +9,7 @@ import {
   DirectionalLight,
   FlatShading
 } from 'three';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import * as dat from 'dat.gui';
 
 const gui = new dat.GUI();
@@ -28,9 +29,9 @@ gui.add(world.plane, 'heightSegments', 1, 50).onChange(generatePlane);
 function generatePlane() {
   planeMesh.geometry.dispose();
   planeMesh.geometry = new PlaneGeometry(
-    world.plane.width, 
-    world.plane.height, 
-    world.plane.widthSegments, 
+    world.plane.width,
+    world.plane.height,
+    world.plane.widthSegments,
     world.plane.heightSegments
   );
   const { array } = planeMesh.geometry.attributes.position;
@@ -52,6 +53,8 @@ renderer.setSize(innerWidth, innerHeight);
 renderer.setPixelRatio(devicePixelRatio);
 document.body.appendChild(renderer.domElement);
 
+new OrbitControls(camera, renderer.domElement);
+
 camera.position.z = 5;
 
 const planeGeometry = new PlaneGeometry(10, 10, 10, 10);
@@ -71,6 +74,10 @@ for (let i = 0; i < array.length; i += 3) {
 const light = new DirectionalLight(0xFFFFFF, 1);
 light.position.set(0, 0, 1);
 scene.add(light);
+
+const backLight = new DirectionalLight(0xFFFFFF, 1);
+backLight.position.set(0, 0, -1);
+scene.add(backLight);
 
 const animate = () => {
   requestAnimationFrame(animate);
