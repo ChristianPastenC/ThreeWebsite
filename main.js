@@ -9,6 +9,7 @@ import {
   DirectionalLight,
   FlatShading,
   Raycaster,
+  BufferAttribute
 } from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import * as dat from 'dat.gui';
@@ -61,9 +62,10 @@ camera.position.z = 5;
 
 const planeGeometry = new PlaneGeometry(10, 10, 10, 10);
 const planeMaterial = new MeshPhongMaterial({
-  color: 0xFF0000,
+
   side: DoubleSide,
   flatShading: FlatShading,
+  vertexColors: true,
 });
 const planeMesh = new Mesh(planeGeometry, planeMaterial);
 scene.add(planeMesh);
@@ -72,6 +74,13 @@ const { array } = planeMesh.geometry.attributes.position;
 for (let i = 0; i < array.length; i += 3) {
   array[i + 2] += Math.random();
 }
+
+const colors = []
+for (let i = 0; i < planeMesh.geometry.attributes.position.count; i++) {
+  colors.push(1, 0, 0);
+}
+
+planeMesh.geometry.setAttribute('color', new BufferAttribute(new Float32Array(colors), 3));
 
 const light = new DirectionalLight(0xFFFFFF, 1);
 light.position.set(0, 0, 1);
@@ -92,8 +101,25 @@ const animate = () => {
 
   raycaster.setFromCamera(mouse, camera);
   const intersects = raycaster.intersectObject(planeMesh);
-  if(intersects.length > 0){
-    console.log('intersecting');
+  if (intersects.length > 0) {
+    const { color } = intersects[0].object.geometry.attributes;
+    
+    // vertice 1
+    color.setX(intersects[0].face.a, 0);
+    color.setY(intersects[0].face.a, 0);
+    color.setZ(intersects[0].face.a, 1);
+    
+    // vertice 2
+    color.setX(intersects[0].face.b, 0);
+    color.setY(intersects[0].face.b, 0);
+    color.setZ(intersects[0].face.b, 1);
+
+    // vertice 3
+    color.setX(intersects[0].face.c, 0);
+    color.setY(intersects[0].face.c, 0);
+    color.setZ(intersects[0].face.c, 1);
+
+    intersects[0].object.geometry.attributes.color.needsUpdate = true;
   }
   // planeMesh.rotation.x += 0.01;
 }
