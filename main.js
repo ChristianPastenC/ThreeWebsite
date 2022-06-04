@@ -7,7 +7,8 @@ import {
   DoubleSide,
   MeshPhongMaterial,
   DirectionalLight,
-  FlatShading
+  FlatShading,
+  Raycaster,
 } from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import * as dat from 'dat.gui';
@@ -40,6 +41,7 @@ function generatePlane() {
   }
 }
 
+const raycaster = new Raycaster();
 const scene = new Scene();
 const camera = new PerspectiveCamera(
   75,
@@ -79,18 +81,25 @@ const backLight = new DirectionalLight(0xFFFFFF, 1);
 backLight.position.set(0, 0, -1);
 scene.add(backLight);
 
+const mouse = {
+  x: undefined,
+  y: undefined,
+}
+
 const animate = () => {
   requestAnimationFrame(animate);
   renderer.render(scene, camera);
+
+  raycaster.setFromCamera(mouse, camera);
+  const intersects = raycaster.intersectObject(planeMesh);
+  if(intersects.length > 0){
+    console.log('intersecting');
+  }
   // planeMesh.rotation.x += 0.01;
 }
 
 animate();
 
-const mouse = {
-  x: undefined,
-  y: undefined,
-}
 addEventListener('mousemove', (event) => {
   mouse.x = (event.clientX / innerWidth) * 2 - 1;
   mouse.y = -(event.clientY / innerHeight) * 2 + 1;
