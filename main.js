@@ -15,19 +15,19 @@ import {
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import * as dat from 'dat.gui';
 
-const gui = new dat.GUI();
+const gui = new dat.GUI()
 const world = {
   plane: {
-    width: 19,
-    height: 19,
-    widthSegments: 17,
-    heightSegments: 17,
+    width: 400,
+    height: 400,
+    widthSegments: 50,
+    heightSegments: 50
   }
 }
-gui.add(world.plane, 'width', 1, 20).onChange(generatePlane);
-gui.add(world.plane, 'height', 1, 20).onChange(generatePlane);
-gui.add(world.plane, 'widthSegments', 1, 50).onChange(generatePlane);
-gui.add(world.plane, 'heightSegments', 1, 50).onChange(generatePlane);
+gui.add(world.plane, 'width', 1, 500).onChange(generatePlane);
+gui.add(world.plane, 'height', 1, 500).onChange(generatePlane)
+gui.add(world.plane, 'widthSegments', 1, 100).onChange(generatePlane)
+gui.add(world.plane, 'heightSegments', 1, 100).onChange(generatePlane)
 
 function generatePlane() {
   planeMesh.geometry.dispose();
@@ -37,17 +37,33 @@ function generatePlane() {
     world.plane.widthSegments,
     world.plane.heightSegments
   );
+
+  // vertice position randomization
   const { array } = planeMesh.geometry.attributes.position;
-  for (let i = 0; i < array.length; i += 3) {
-    array[i + 2] += Math.random();
+  const randomValues = [];
+  for (let i = 0; i < array.length; i++) {
+    if (i % 3 === 0) {
+      array[i] += (Math.random() - 0.5) * 3
+      array[i + 1] += (Math.random() - 0.5) * 3
+      array[i + 2] += (Math.random() - 0.5) * 3
+    }
+    
+    randomValues.push(Math.random() * Math.PI * 2)
   }
+
+  planeMesh.geometry.attributes.position.randomValues = randomValues;
+  planeMesh.geometry.attributes.position.originalPosition =
+    planeMesh.geometry.attributes.position.array;
 
   const colors = []
   for (let i = 0; i < planeMesh.geometry.attributes.position.count; i++) {
     colors.push(0, 0.19, 0.4);
   }
 
-  planeMesh.geometry.setAttribute('color', new BufferAttribute(new Float32Array(colors), 3));
+  planeMesh.geometry.setAttribute(
+    'color',
+    new BufferAttribute(new Float32Array(colors), 3)
+  );
 }
 
 const raycaster = new Raycaster();
@@ -65,35 +81,22 @@ renderer.setPixelRatio(devicePixelRatio);
 document.body.appendChild(renderer.domElement);
 
 new OrbitControls(camera, renderer.domElement);
-
-camera.position.z = 5;
+camera.position.z = 50;
 
 const planeGeometry = new PlaneGeometry(
   world.plane.width,
   world.plane.height,
   world.plane.widthSegments,
   world.plane.heightSegments
-);
+)
 const planeMaterial = new MeshPhongMaterial({
-
   side: DoubleSide,
   flatShading: FlatShading,
   vertexColors: true,
 });
 const planeMesh = new Mesh(planeGeometry, planeMaterial);
 scene.add(planeMesh);
-
-const { array } = planeMesh.geometry.attributes.position;
-for (let i = 0; i < array.length; i += 3) {
-  array[i + 2] += Math.random();
-}
-
-const colors = []
-for (let i = 0; i < planeMesh.geometry.attributes.position.count; i++) {
-  colors.push(0, 0.19, 0.4);
-}
-
-planeMesh.geometry.setAttribute('color', new BufferAttribute(new Float32Array(colors), 3));
+generatePlane();
 
 const light = new DirectionalLight(0xFFFFFF, 1);
 light.position.set(0, 0, 1);
@@ -108,11 +111,29 @@ const mouse = {
   y: undefined,
 }
 
-const animate = () => {
+let frame = 0;
+function animate() {
   requestAnimationFrame(animate);
   renderer.render(scene, camera);
-
   raycaster.setFromCamera(mouse, camera);
+  frame += 0.01;
+
+  const {
+    array,
+    originalPosition,
+    randomValues
+  } = planeMesh.geometry.attributes.position
+  for (let i = 0; i < array.length; i += 3) {
+    // x
+    array[i] = originalPosition[i] + Math.cos(frame + randomValues[i]) * 0.01;
+
+    // y
+    array[i + 1] =
+      originalPosition[i + 1] + Math.sin(frame + randomValues[i + 1]) * 0.001;
+  }
+
+  planeMesh.geometry.attributes.position.needsUpdate = true;
+
   const intersects = raycaster.intersectObject(planeMesh);
   if (intersects.length > 0) {
     const { color } = intersects[0].object.geometry.attributes;
@@ -148,6 +169,7 @@ const animate = () => {
       r: initialColor.r,
       g: initialColor.g,
       b: initialColor.b,
+      duration: 1,
       onUpdate: () => {
         // vertex 1
         color.setX(intersects[0].face.a, hoverColor.r);
@@ -167,7 +189,6 @@ const animate = () => {
       }
     });
   }
-  // planeMesh.rotation.x += 0.01;
 }
 
 animate();
