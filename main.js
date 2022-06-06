@@ -18,10 +18,10 @@ import * as dat from 'dat.gui';
 const gui = new dat.GUI();
 const world = {
   plane: {
-    width: 10,
-    height: 10,
-    widthSegments: 10,
-    heightSegments: 10,
+    width: 19,
+    height: 19,
+    widthSegments: 17,
+    heightSegments: 17,
   }
 }
 gui.add(world.plane, 'width', 1, 20).onChange(generatePlane);
@@ -41,6 +41,13 @@ function generatePlane() {
   for (let i = 0; i < array.length; i += 3) {
     array[i + 2] += Math.random();
   }
+
+  const colors = []
+  for (let i = 0; i < planeMesh.geometry.attributes.position.count; i++) {
+    colors.push(0, 0.19, 0.4);
+  }
+
+  planeMesh.geometry.setAttribute('color', new BufferAttribute(new Float32Array(colors), 3));
 }
 
 const raycaster = new Raycaster();
@@ -61,7 +68,12 @@ new OrbitControls(camera, renderer.domElement);
 
 camera.position.z = 5;
 
-const planeGeometry = new PlaneGeometry(10, 10, 10, 10);
+const planeGeometry = new PlaneGeometry(
+  world.plane.width,
+  world.plane.height,
+  world.plane.widthSegments,
+  world.plane.heightSegments
+);
 const planeMaterial = new MeshPhongMaterial({
 
   side: DoubleSide,
