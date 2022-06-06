@@ -14,6 +14,7 @@ import {
 } from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import * as dat from 'dat.gui';
+import './index.css'
 
 const gui = new dat.GUI()
 const world = {
@@ -21,13 +22,13 @@ const world = {
     width: 400,
     height: 400,
     widthSegments: 50,
-    heightSegments: 50
+    heightSegments: 50,
   }
 }
 gui.add(world.plane, 'width', 1, 500).onChange(generatePlane);
-gui.add(world.plane, 'height', 1, 500).onChange(generatePlane)
-gui.add(world.plane, 'widthSegments', 1, 100).onChange(generatePlane)
-gui.add(world.plane, 'heightSegments', 1, 100).onChange(generatePlane)
+gui.add(world.plane, 'height', 1, 500).onChange(generatePlane);
+gui.add(world.plane, 'widthSegments', 1, 100).onChange(generatePlane);
+gui.add(world.plane, 'heightSegments', 1, 100).onChange(generatePlane);
 
 function generatePlane() {
   planeMesh.geometry.dispose();
@@ -35,7 +36,7 @@ function generatePlane() {
     world.plane.width,
     world.plane.height,
     world.plane.widthSegments,
-    world.plane.heightSegments
+    world.plane.heightSegments,
   );
 
   // vertice position randomization
@@ -47,22 +48,21 @@ function generatePlane() {
       array[i + 1] += (Math.random() - 0.5) * 3
       array[i + 2] += (Math.random() - 0.5) * 3
     }
-    
-    randomValues.push(Math.random() * Math.PI * 2)
+
+    randomValues.push(Math.random() * Math.PI * 2);
   }
 
   planeMesh.geometry.attributes.position.randomValues = randomValues;
-  planeMesh.geometry.attributes.position.originalPosition =
-    planeMesh.geometry.attributes.position.array;
+  planeMesh.geometry.attributes.position.originalPosition = planeMesh.geometry.attributes.position.array;
 
-  const colors = []
+  const colors = [];
   for (let i = 0; i < planeMesh.geometry.attributes.position.count; i++) {
     colors.push(0, 0.19, 0.4);
   }
 
   planeMesh.geometry.setAttribute(
     'color',
-    new BufferAttribute(new Float32Array(colors), 3)
+    new BufferAttribute(new Float32Array(colors), 3),
   );
 }
 
@@ -87,7 +87,7 @@ const planeGeometry = new PlaneGeometry(
   world.plane.width,
   world.plane.height,
   world.plane.widthSegments,
-  world.plane.heightSegments
+  world.plane.heightSegments,
 )
 const planeMaterial = new MeshPhongMaterial({
   side: DoubleSide,
@@ -128,8 +128,7 @@ function animate() {
     array[i] = originalPosition[i] + Math.cos(frame + randomValues[i]) * 0.01;
 
     // y
-    array[i + 1] =
-      originalPosition[i + 1] + Math.sin(frame + randomValues[i + 1]) * 0.001;
+    array[i + 1] = originalPosition[i + 1] + Math.sin(frame + randomValues[i + 1]) * 0.001;
   }
 
   planeMesh.geometry.attributes.position.needsUpdate = true;
