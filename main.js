@@ -10,7 +10,11 @@ import {
   DirectionalLight,
   FlatShading,
   Raycaster,
-  BufferAttribute
+  BufferAttribute,
+  BufferGeometry,
+  PointsMaterial,
+  Float32BufferAttribute,
+  Points
 } from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import * as dat from 'dat.gui';
@@ -106,6 +110,28 @@ const backLight = new DirectionalLight(0xFFFFFF, 1);
 backLight.position.set(0, 0, -1);
 scene.add(backLight);
 
+// Creates starflied
+const starGeometry = new BufferGeometry();
+const starMaterial = new PointsMaterial({
+  color: 0xffffff
+});
+
+const starVerticies = [];
+for (let i = 0; i < 10000; i++) {
+  const x = (Math.random() - 0.5) * 2000;
+  const y = (Math.random() - 0.5) * 2000;
+  const z = (Math.random() - 0.5) * 2000;
+  starVerticies.push(x, y, z);
+}
+
+starGeometry.setAttribute(
+  'position',
+  new Float32BufferAttribute(starVerticies, 3),
+)
+
+const stars = new Points(starGeometry, starMaterial);
+scene.add(stars);
+
 const mouse = {
   x: undefined,
   y: undefined,
@@ -188,6 +214,8 @@ function animate() {
       }
     });
   }
+
+  stars.rotation.x += 0.005;
 }
 
 animate();
