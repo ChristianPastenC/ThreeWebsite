@@ -225,6 +225,7 @@ addEventListener('mousemove', (event) => {
   mouse.y = -(event.clientY / innerHeight) * 2 + 1;
 });
 
+// animations on init
 gsap.to('#name', {
   opacity: 1,
   duration: 1.5,
@@ -248,6 +249,7 @@ gsap.to('#button', {
   ease: 'expo',
 });
 
+// button function animation
 document.querySelector('#button')
   .addEventListener('click', (event) => {
     event.preventDefault();
@@ -273,9 +275,13 @@ document.querySelector('#button')
       ease: 'power3.inOut',
       duration: 1.5,
       delay: 2,
+      onComplete: () => {
+        window.location = 'https://github.com/ChristianPastenC';
+      }
     });
   });
 
+// resize function
 addEventListener('resize', () => {
   camera.aspect = innerWidth / innerHeight;
   camera.updateProjectionMatrix();
