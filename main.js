@@ -247,3 +247,32 @@ gsap.to('#button', {
   y: 0,
   ease: 'expo',
 });
+
+document.querySelector('#button')
+  .addEventListener('click', (event) => {
+    event.preventDefault();
+    
+    gsap.to('#container', {
+      opacity: 0,
+    });
+
+    gsap.to(camera.position, {
+      z: 25,
+      ease: 'power3.inOut',
+      duration: 2,
+    });
+
+    gsap.to(camera.rotation, {
+      x: 1.57,
+      ease: 'power3.inOut',
+      duration: 2,
+    });
+
+    gsap.to(camera.position, {
+      y: 1000,
+      ease: 'power3.inOut',
+      duration: 1.5,
+      delay: 2,
+    });
+
+  });
