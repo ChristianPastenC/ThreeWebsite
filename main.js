@@ -251,7 +251,7 @@ gsap.to('#button', {
 document.querySelector('#button')
   .addEventListener('click', (event) => {
     event.preventDefault();
-    
+
     gsap.to('#container', {
       opacity: 0,
     });
@@ -274,5 +274,10 @@ document.querySelector('#button')
       duration: 1.5,
       delay: 2,
     });
-
   });
+
+addEventListener('resize', () => {
+  camera.aspect = innerWidth / innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth, innerHeight);
+});
